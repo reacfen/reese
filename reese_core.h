@@ -7,49 +7,75 @@ extern "C" {
 
 #include <stdint.h>
 
-#define capture(type, var) (*(type*)reese_set_capture(&(var)))
-#define capture_ptr(type, var) ((type*)reese_set_capture(&(var)))
+// Capture the instance and dereference it
+#define capture(type, inst) (*(type*)reese_set_capture(&(inst)))
+// Capture the instance without dereferencing (i.e., captures the instance and returns the pointer to it)
+#define capture_ref(type, inst) ((type*)reese_set_capture(&(inst)))
 
+// Finishes capturing the current instance
 #define finish_capture reese_finish_capture
 
+// Declares a member function in the class
 #define REESE_DECLARE_MEMBER_FUNC(name, params) reese_end_capture_ret_type (*name) params;
+// Forward declares a member function outside the class
 #define REESE_FORWARD_DECLARE_MEMBER_FUNC(structure, name, params) reese_end_capture_ret_type structure##_##name##_##impl params;
+// Defines a member function
 #define REESE_DEFINE_MEMBER_FUNC(structure, name, params, body) reese_end_capture_ret_type structure##_##name##_##impl params { \
                                                                     structure *self = reese_get_capture();                      \
                                                                     reese_set_capture_result(NULL);                             \
-                                                                    do body while(0);                                           \
+                                                                    do {                                                        \
+                                                                        body                                                    \
+                                                                    } while(0);                                                 \
                                                                     reese_end_capture_ret_type ec;                              \
                                                                     ec.ret = &reese_get_capture_result;                         \
                                                                     return ec;                                                  \
                                                                 }
+// Binds a member function to the class
 #define REESE_BIND_MEMBER_FUNC(structure, name) (self->name = &structure##_##name##_##impl)
-#define REESE_MEMBER_FUNC_RETURN(value) reese_set_capture_result(reese_allocate(sizeof (value), value))
-#define REESE_MEMBER_FUNC_RETURN_NULL() reese_set_capture_result(NULL)
+// Returns the specified value through the member function
+#define REESE_MEMBER_FUNC_RETURN(value) reese_set_capture_result(reese_allocate(sizeof (value), value)); break
+// Returns null through the member function
+#define REESE_MEMBER_FUNC_RETURN_NULL() reese_set_capture_result(NULL); break
 
+// Forward declares the constructor outside the class
 #define REESE_FORWARD_DECLARE_CONSTRUCTOR(structure, params) structure create_##structure params;
+// Defines the constructor for the class
 #define REESE_DEFINE_CONSTRUCTOR(structure, params, body) structure create_##structure params { \
                                                               structure __self;                 \
                                                               structure *self = &__self;        \
-                                                              do body while(0);                 \
+                                                              do {                              \
+                                                                  body                          \
+                                                              } while(0);                       \
                                                               return __self;                    \
                                                           }
 
+// Fetches the constructor for the specified structure
 #define REESE_FETCH_CONSTRUCTOR(structure) create_##structure
+// Constructs an instance for the specified structure using the specified constructor arguments
+#define REESE_CONSTRUCT(structure, ...) REESE_FETCH_CONSTRUCTOR(structure) (__VA_ARGS__)
 
-#define REESE_RET_CAST(type) *(const type*)
+// Casts the return value returned by a member function
+#define ret_cast(type) *(const type*)
 
+// This structure is provides the 'ret()' suffix to fetch the return value of a member function.
 typedef struct {
     const void *(*ret)(void);
 } reese_end_capture_ret_type;
 
+// Dynamically allocates memory for storing a value
 void *reese_allocate(size_t byte_size, ...);
 
+// Sets the variable for capture
 void *reese_set_capture(void *capture_var);
+// Returns the variable currently being captured
 void *reese_get_capture(void);
 
+// Sets the capture result (i.e., sets the pointer to the return value of the invoked member function)
 void reese_set_capture_result(void* capture_result);
+// Returns the capture result (i.e., returns the pointer to the return value of the invoked member function)
 const void* reese_get_capture_result(void);
 
+// Finishes capturing the current instance and frees the required memory
 void reese_finish_capture(void);
 
 #ifdef __cplusplus
