@@ -8,7 +8,36 @@ Reese is a library for C99/C11 that introduces a pseudo-class-like structure ins
 
 ## Installation
 
-Reese is fairly simple to install. Just copy all the above files in the repository into your project and you are all up and ready to use it in your project!
+Follow these steps to install reese using CMake:
+
+1. Open the command line in the directory where you would like to install reese.
+2. Fetch the repo using git:
+    ```sh
+    git clone https://www.github.com/reacfen/reese
+    ```
+3. A directory called `reese` will be created. Now, enter that directory using `cd`:
+    ```sh
+    cd ./reese
+    ```
+4. Create the build directory where the library will be built:
+   ```sh
+   mkdir build
+   ```
+5. Enter the newly created `build` directory:
+    ```sh
+   cd ./build
+   ```
+6. Run `cmake`:
+   ```sh
+   cmake ..
+   ```
+7. Now run `make` to build it:
+   ```sh
+   make
+   ```
+8. After the command finishes, you will be able to find the compiled library in the `build` directory.
+
+And that's it. You are ready to start using reese in your project!
 
 ## Usage
 
@@ -87,25 +116,23 @@ You can reference classes that are not yet defined by taking a pointer to it:
 
 ```c
 typedef struct example {
+    // "my_class" is not defined yet, so you must take a pointer to it for now.
     REESE_CLASS my_class* instance;
 } example;
 // Defining a class called "my_class"
 REESE_DEFINE_CLASS_INLINE(my_class,
     // Instance variable(s)
     int x;
-    , // <- This comma is important!
+    ,
 
-    // Define the constructor (You must define it before all other member functions!)
+    // Constructor and member functions
     my_class, (int x), {
         self->x = x;
     },
-    // Define the member method(s) (Can be defined in any order you want)
     set_x, (int x), {
         self->x = x;
     },
     get_x, (void), {
-        /* Note that you have to use 'reese_return' and NOT 'return' when returning a value
-         * from a member function! */
         reese_return(self->x);
     }
 )
@@ -114,7 +141,9 @@ int main(void) {
     example example_inst;
     my_class inst = create_my_class(123);
     example_inst.instance = &inst;
-    printf("%d\n", example_inst.instance);
+    printf("%d\n", capture(example_inst.instance).get_x());
+    // ...
+    finish_capture();
     // ...
 }
 ```
@@ -157,11 +186,12 @@ finish_capture();
 > // ...
 > const int returned_value = ret_cast(int)cap(inst).get_x().ret();
 > printf("%d\n", returned_value); // 123
->
+> // ...
 > cap(inst).set_x(321);
 > printf("%d\n", inst.x);         // 321
 > // ...
 > finish_capture();
+> // ...
 > ```
 
 ## FAQ

@@ -16,7 +16,7 @@ static bool is_null = false;
 // Checks if the pointer to the return value was recently added to the chain
 static bool is_recently_added = false;
 
-void *reese_allocate(size_t const byte_size, ...) {
+REESE_API void *reese_allocate(size_t const byte_size, ...) {
     // Allocate sufficient memory
     void *memory = malloc(byte_size);
     // Fill the memory with the required value
@@ -25,7 +25,7 @@ void *reese_allocate(size_t const byte_size, ...) {
     return memory;
 }
 
-void *reese_set_capture(void *capture_var) {
+REESE_API void *reese_set_capture(void *capture_var) {
     // If the captured results is more than one, then flush it
     if (cap_results_chain_length > 0)
         reese_finish_capture();
@@ -35,12 +35,12 @@ void *reese_set_capture(void *capture_var) {
     return cap_pointers_chain[cap_pointers_chain_length - 1] = capture_var;
 }
 
-void *reese_get_capture(void) {
+REESE_API void *reese_get_capture(void) {
     // Return the most recently captured pointer to variable
     return cap_pointers_chain[cap_pointers_chain_length - 1];
 }
 
-void reese_set_capture_result(void *capture_result) {
+REESE_API void reese_set_capture_result(void *capture_result) {
     // Check if the captured pointer is not NULL
     if (!(is_null = capture_result == NULL)) {
         // Notify the other functions that the variable was recently captured
@@ -52,7 +52,7 @@ void reese_set_capture_result(void *capture_result) {
     }
 }
 
-const void *reese_get_capture_result(void) {
+REESE_API const void *reese_get_capture_result(void) {
     // Check if the most recent capture result is NULL, if yes, return NULL
     if (is_null) return NULL;
     // Free the last pointer to the return value if it was not recently added
@@ -68,7 +68,7 @@ const void *reese_get_capture_result(void) {
     return cap_results_chain[cap_results_chain_length];
 }
 
-void reese_finish_capture(void) {
+REESE_API void reese_finish_capture(void) {
     // Free the captured pointers chain if it is not NULL
     if (cap_pointers_chain != NULL)
         free(cap_pointers_chain);

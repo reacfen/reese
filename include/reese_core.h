@@ -7,6 +7,31 @@ extern "C" {
 
 #include <stdint.h>
 
+#if defined _WIN32 || defined __CYGWIN__
+#	ifdef REESE_EXPORTS
+#		ifdef __GNUC__
+#			define REESE_API __attribute__ ((dllexport))
+#		else
+#			define REESE_API __declspec(dllexport)
+#		endif
+#	else
+#		ifdef __GNUC__
+#			define REESE_API __attribute__ ((dllimport))
+#		else
+#			define REESE_API __declspec(dllimport)
+#		endif
+#	endif
+#	define REESE_API_IGNORE
+#else
+#	if __GNUC__ >= 4
+#           define REESE_API __attribute__ ((visibility ("default")))
+#           define REESE_API_IGNORE  __attribute__ ((visibility ("hidden")))
+#	else
+#		define REESE_API
+#		define REESE_API_IGNORE
+#	endif
+#endif
+
 // Capture the instance and dereference it
 #define capture(type, inst) (*(type*)reese_set_capture(&(inst)))
 // Capture the instance without dereferencing (i.e., captures the instance and returns the pointer to it)
@@ -63,20 +88,20 @@ typedef struct {
 } reese_end_capture_ret_type;
 
 // Dynamically allocates memory for storing a value
-void *reese_allocate(size_t byte_size, ...);
+REESE_API void *reese_allocate(size_t byte_size, ...);
 
 // Sets the variable for capture
-void *reese_set_capture(void *capture_var);
+REESE_API void *reese_set_capture(void *capture_var);
 // Returns the variable currently being captured
-void *reese_get_capture(void);
+REESE_API void *reese_get_capture(void);
 
 // Sets the capture result (i.e., sets the pointer to the return value of the invoked member function)
-void reese_set_capture_result(void* capture_result);
+REESE_API void reese_set_capture_result(void* capture_result);
 // Returns the capture result (i.e., returns the pointer to the return value of the invoked member function)
-const void* reese_get_capture_result(void);
+REESE_API const void* reese_get_capture_result(void);
 
 // Finishes capturing the current instance and frees the required memory
-void reese_finish_capture(void);
+REESE_API void reese_finish_capture(void);
 
 #ifdef __cplusplus
 }

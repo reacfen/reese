@@ -13,9 +13,9 @@
 
 #define REESE_EVALUATE(...) __VA_ARGS__
 
-#if __STDC_VERSION__ < 199901L
 // If the C standard is neither C99/C11 or above, then give an error to the user
-#error "Reese is not supported by C standard versions lower than C99"
+#if __STDC_VERSION__ < 199901L
+#    error "Reese is not supported by C standard versions lower than C99"
 #endif
 
 // Defines the structure for a class
@@ -519,7 +519,7 @@
 #define REESE_DRAFT(_1, _2, ...) REESE_EVALUATE(REESE_CONCATENATE(REESE_DRAFT, REESE_2N256(__VA_ARGS__))(__VA_ARGS__))
 
 #define REESE_CLASS_INLINE_DRAFT0(...)
-#define REESE_CLASS_INLINE_DRAFT1(name, params, body) REESE_DECLARE_MEMBER_FUNC(name, params) REESE_EVALUATE(REESE_CLASS_INLINE_DRAFT0(__VA_ARGS__))
+#define REESE_CLASS_INLINE_DRAFT1(name, params, body) REESE_DECLARE_MEMBER_FUNC(name, params)
 #define REESE_CLASS_INLINE_DRAFT2(name, params, body, ...) REESE_DECLARE_MEMBER_FUNC(name, params) REESE_EVALUATE(REESE_CLASS_INLINE_DRAFT1(__VA_ARGS__))
 #define REESE_CLASS_INLINE_DRAFT3(name, params, body, ...) REESE_DECLARE_MEMBER_FUNC(name, params) REESE_EVALUATE(REESE_CLASS_INLINE_DRAFT2(__VA_ARGS__))
 #define REESE_CLASS_INLINE_DRAFT4(name, params, body, ...) REESE_DECLARE_MEMBER_FUNC(name, params) REESE_EVALUATE(REESE_CLASS_INLINE_DRAFT3(__VA_ARGS__))
@@ -1819,14 +1819,14 @@
 #define REESE_BIND(structure, ...) REESE_EVALUATE(REESE_EVALUATE(REESE_CONCATENATE(REESE_BIND, REESE_3N256(__VA_ARGS__))(structure, __VA_ARGS__)))
 
 // Defines the constructor and binds the member functions of the class simultaneously
-#define REESE_DEFINE_CONSTRUCTOR_WITH_BIND(structure, params, body, ...) structure create_##structure params {         \
-                                                                              structure __self;                        \
-                                                                              structure *self = &__self;               \
-                                                                              REESE_BIND(structure, __VA_ARGS__); \
-                                                                              do {                                     \
-                                                                                  body                                 \
-                                                                              } while(0);                              \
-                                                                              return __self;                           \
-                                                                          }
+#define REESE_DEFINE_CONSTRUCTOR_WITH_BIND(structure, params, body, ...) structure create_##structure params {   \
+                                                                             structure __self;                   \
+                                                                             structure *self = &__self;          \
+                                                                             REESE_BIND(structure, __VA_ARGS__); \
+                                                                             do {                                \
+                                                                                 body                            \
+                                                                             } while(0);                         \
+                                                                             return __self;                      \
+                                                                         }
 
 #endif /* REESE_CONVENIENCE_MACROS */
