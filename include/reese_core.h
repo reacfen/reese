@@ -48,19 +48,27 @@ extern "C" {
 #define REESE_DEFINE_MEMBER_FUNC(structure, name, params, body) reese_end_capture_ret_type structure##_##name##_##impl params { \
                                                                     structure *self = reese_get_capture();                      \
                                                                     reese_set_capture_result(NULL);                             \
+                                                                    reese_end_capture_ret_type __ec;                            \
                                                                     do {                                                        \
                                                                         body                                                    \
                                                                     } while(0);                                                 \
-                                                                    reese_end_capture_ret_type ec;                              \
-                                                                    ec.ret = &reese_get_capture_result;                         \
-                                                                    return ec;                                                  \
+                                                                    __ec.ret = &reese_get_capture_result;                       \
+                                                                    return __ec;                                                \
                                                                 }
 // Binds a member function to the class
 #define REESE_BIND_MEMBER_FUNC(structure, name) (self->name = &structure##_##name##_##impl)
 // Returns the specified value through the member function
-#define REESE_MEMBER_FUNC_RETURN(value) reese_set_capture_result(reese_allocate(sizeof (value), value)); break
+#define REESE_MEMBER_FUNC_RETURN(value) do {                                                                   \
+                                            reese_set_capture_result(reese_allocate(sizeof (value), (value))); \
+                                            __ec.ret = &reese_get_capture_result;                              \
+                                            return __ec;                                                       \
+                                        } while(0)
 // Returns null through the member function
-#define REESE_MEMBER_FUNC_RETURN_NULL() reese_set_capture_result(NULL); break
+#define REESE_MEMBER_FUNC_RETURN_NULL() do {                                      \
+                                            reese_set_capture_result(NULL);       \
+                                            __ec.ret = &reese_get_capture_result; \
+                                            return __ec;                          \
+                                        } while(0)
 
 // Forward declares the constructor outside the class
 #define REESE_FORWARD_DECLARE_CONSTRUCTOR(structure, params) structure create_##structure params;
