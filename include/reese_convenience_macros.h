@@ -6,17 +6,10 @@
 // Returns null through the member function
 #define reese_return_null REESE_MEMBER_FUNC_RETURN_NULL
 
-#define REESE_CLASS struct
-
 #define REESE_CONCATENATE_IMPL(a, b) a##b
 #define REESE_CONCATENATE(a, b) REESE_CONCATENATE_IMPL(a, b)
 
 #define REESE_EVALUATE(...) __VA_ARGS__
-
-// If the C standard is neither C99/C11 or above, then give an error to the user
-#if __STDC_VERSION__ < 199901L
-#    error "Reese is not supported by C standard versions lower than C99"
-#endif
 
 // Defines the structure for a class
 #define REESE_DEFINE_CLASS(structure, instance_variables, ...) typedef struct structure {                           \

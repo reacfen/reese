@@ -117,7 +117,7 @@ You can reference classes that are not yet defined by taking a pointer to it:
 ```c
 typedef struct example {
     // "my_class" is not defined yet, so you must take a pointer to it for now.
-    REESE_CLASS my_class* instance;
+    struct my_class *instance;
 } example;
 // Defining a class called "my_class"
 REESE_DEFINE_CLASS_INLINE(my_class,
@@ -141,7 +141,7 @@ int main(void) {
     example example_inst;
     my_class inst = create_my_class(123);
     example_inst.instance = &inst;
-    printf("%d\n", capture(example_inst.instance).get_x());
+    printf("%d\n", ret_cast(int)capture(example_inst.instance).get_x().ret());
     // ...
     finish_capture();
     // ...

@@ -20,7 +20,7 @@ REESE_API void *reese_allocate(size_t const byte_size, ...) {
     // Allocate sufficient memory
     void *memory = malloc(byte_size);
     // Fill the memory with the required value
-    memcpy(memory, (void *) ((uintptr_t) &byte_size + sizeof(size_t)), byte_size);
+    memcpy(memory, (void *)((uintptr_t)&byte_size + sizeof(size_t)), byte_size);
     // Return the newly created memory
     return memory;
 }

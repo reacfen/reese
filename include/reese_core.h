@@ -48,26 +48,26 @@ extern "C" {
 #define REESE_DEFINE_MEMBER_FUNC(structure, name, params, body) reese_end_capture_ret_type structure##_##name##_##impl params { \
                                                                     structure *self = reese_get_capture();                      \
                                                                     reese_set_capture_result(NULL);                             \
-                                                                    reese_end_capture_ret_type __ec;                            \
+                                                                    reese_end_capture_ret_type _ec;                             \
                                                                     do {                                                        \
                                                                         body                                                    \
                                                                     } while(0);                                                 \
-                                                                    __ec.ret = &reese_get_capture_result;                       \
-                                                                    return __ec;                                                \
+                                                                    _ec.ret = &reese_get_capture_result;                        \
+                                                                    return _ec;                                                 \
                                                                 }
 // Binds a member function to the class
 #define REESE_BIND_MEMBER_FUNC(structure, name) (self->name = &structure##_##name##_##impl)
 // Returns the specified value through the member function
-#define REESE_MEMBER_FUNC_RETURN(value) do {                                                                   \
-                                            reese_set_capture_result(reese_allocate(sizeof (value), (value))); \
-                                            __ec.ret = &reese_get_capture_result;                              \
-                                            return __ec;                                                       \
+#define REESE_MEMBER_FUNC_RETURN(value) do {                                                                  \
+                                            reese_set_capture_result(reese_allocate(sizeof(value), (value))); \
+                                            _ec.ret = &reese_get_capture_result;                              \
+                                            return _ec;                                                       \
                                         } while(0)
 // Returns null through the member function
-#define REESE_MEMBER_FUNC_RETURN_NULL() do {                                      \
-                                            reese_set_capture_result(NULL);       \
-                                            __ec.ret = &reese_get_capture_result; \
-                                            return __ec;                          \
+#define REESE_MEMBER_FUNC_RETURN_NULL() do {                                     \
+                                            reese_set_capture_result(NULL);      \
+                                            _ec.ret = &reese_get_capture_result; \
+                                            return _ec;                          \
                                         } while(0)
 
 // Forward declares the constructor outside the class
@@ -104,9 +104,9 @@ REESE_API void *reese_set_capture(void *capture_var);
 REESE_API void *reese_get_capture(void);
 
 // Sets the capture result (i.e., sets the pointer to the return value of the invoked member function)
-REESE_API void reese_set_capture_result(void* capture_result);
+REESE_API void reese_set_capture_result(void *capture_result);
 // Returns the capture result (i.e., returns the pointer to the return value of the invoked member function)
-REESE_API const void* reese_get_capture_result(void);
+REESE_API const void *reese_get_capture_result(void);
 
 // Finishes capturing the current instance and frees the required memory
 REESE_API void reese_finish_capture(void);
