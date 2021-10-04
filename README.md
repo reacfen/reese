@@ -141,7 +141,7 @@ int main(void) {
     example example_inst;
     my_class inst = create_my_class(123);
     example_inst.instance = &inst;
-    printf("%d\n", ret_cast(int)capture(example_inst.instance).get_x().ret());
+    printf("%d\n", ret_cast(int)capture(my_class, example_inst.instance).get_x().ret());
     // ...
     finish_capture();
     // ...
